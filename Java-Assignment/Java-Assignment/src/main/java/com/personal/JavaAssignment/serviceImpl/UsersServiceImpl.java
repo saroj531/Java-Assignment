@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -35,7 +36,19 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public void save(Users user) {
-        Users newUser = new Users(user.getFirstName(), user.getLastName(), user.getPhoneNumber(), user.getUsername(), passwordEncoder.encode(user.getPassword()), Arrays.asList(new Roles("ROLE_USER")));
+        System.out.println(user);
+        Users newUser = new Users();
+        newUser.setFirstName(user.getFirstName());
+        newUser.setLastName(user.getLastName());
+        newUser.setPhoneNumber(user.getPhoneNumber());
+        newUser.setUsername(user.getUsername());
+        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if(rolesRepository.findRoleByName("ROLE_USER") != null)
+            newUser.setRoles(Arrays.asList(rolesRepository.findRoleByName("ROLE_USER")));
+        else
+            newUser.setRoles(Arrays.asList(new Roles("ROLE_USER")));
+
         usersRepository.save(newUser);
     }
 
@@ -47,6 +60,11 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Users findUserById(Long id){
         return usersRepository.findUserById(id);
+    }
+
+    @Override
+    public Users findUserByUsername(String username){
+        return usersRepository.findUserByUsername(username);
     }
 
     @Override

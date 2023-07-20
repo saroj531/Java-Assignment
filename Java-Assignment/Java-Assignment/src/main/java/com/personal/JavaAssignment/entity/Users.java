@@ -17,13 +17,13 @@ public class Users {
 
     private String lastName;
 
-    private Long phoneNumber;
+    private String phoneNumber;
 
     private String username;
 
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(
@@ -31,6 +31,12 @@ public class Users {
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"))
     private Collection<Roles> roles;
-    public Users(String firstName, String lastName, Long phoneNumber, String username, String password, Collection<Roles> roles) {
+    public Users(String firstName, String lastName, String phoneNumber, String username, String password, Collection<Roles> roles) {
+    }
+
+    public Users(String firstName, String lastName, String phoneNumber, String username, String password) {
+    }
+
+    public Users() {
     }
 }
