@@ -3,6 +3,8 @@ package com.personal.JavaAssignment.controller;
 import com.personal.JavaAssignment.entity.Users;
 import com.personal.JavaAssignment.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +22,12 @@ public class MainController {
 
     @PostMapping("/saveUser")
     public String saveUser(@ModelAttribute("user") Users user) {
-        System.out.println(user);
-        usersService.save(user);
-        return "reg_success";
+            System.out.println(user);
+            if(usersService.findUserByUsername(user.getUsername()) == null) {
+                usersService.save(user);
+                return "reg_success";
+            }else
+                return "user_exists";
     }
 
     @GetMapping("/registerForm")
@@ -31,6 +36,22 @@ public class MainController {
         model.addAttribute("user", user);
         return "register";
     }
+
+    @GetMapping("/profile")
+    public String viewProfile(Model model){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        Users user = usersService.findUserByUsername(username);
+
+        model.addAttribute("firstName", user.getFirstName());
+        model.addAttribute("lastName", user.getLastName());
+        model.addAttribute("phoneNumber", user.getPhoneNumber());
+        model.addAttribute("username", user.getUsername());
+
+        return "profile";
+    }
+
 
 
 }
